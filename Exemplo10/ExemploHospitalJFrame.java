@@ -1,5 +1,6 @@
 package Exemplo10;
 
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -10,22 +11,24 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
 public class ExemploHospitalJFrame implements JFrameBaseInterface {
 
+    private int linhaSelecionada -1;
     private JFrame jFrame;
     private JTextField jTextFieldNome, jTextFieldRendaAnual;
     private JFormattedTextField jFormattedTextFieldCNPJ;
     private JComboBox jComboBoxCategoria;
     private JCheckBox jCheckBoxRendaAtual, jTextFieldAno, jCheckBoxPrivado;
-    private JLabel jLabelAno, jLabelCategoria, jLabelNome, jLabelPrivado,
-            jLabelRendaAnual, jLabelCNPJ;
+    private JLabel jLabelAno, jLabelCategoria, jLabelNome, jLabelPrivado, jLabelRendaAnual, jLabelCNPJ;
     private JButton jButtonAdicionar, jButtonEditar, jButtonExcluir;
     private JTable jTable;
     private JScrollPane jScroolPane;
-    private defaultTableMode dtm;
-    private Object jScrollPane;
+    private DefaultTableModel dtm;
+    private ArrayList<Hospital> hospitais = new ArrayList<>();
+
     public ExemploHospitalJFrame() {
         gerarTela();
         instanciarComponentes();
@@ -37,7 +40,6 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
 
     }
 
-    @Override
     public void gerarTela() {
         jFrame = new JFrame("Hospital para o seu momento");
         jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -46,7 +48,6 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
         jFrame.setLocationRelativeTo(null);
     }
 
-    @Override
     public void instanciarComponentes() {
         jLabelAno = new JLabel("Ano");
         jLabelCategoria = new JLabel("Categoria");
@@ -69,36 +70,32 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
 
     }
 
-    @Override
     public void gerarComponentes() {
     }
 
-    @Override
     public void gerarLocalizacoes() {
         jLabelNome.setLocation(10, 10);
-        jTextFieldNome.setLocation(10,35);
-        
-        jLabelNome.setLocation(10,60);
-        jTextFieldAno.setLocation(10,85);
-        
-        jLabelCNPJ.setLocation(10,110);
-        jFormattedTextFieldCNPJ.setLocation(10,135);
-        
-        jLabelCategoria.setLocation(10,160);
-        jComboBoxCategoria.setLocation(10,185);
-        
-        jLabelRendaAnual.setLocation(10,210);
-        jTextFieldRendaAnual.setLocation(10,235);
-        
-        jCheckBoxPrivado.setLocation(10,260);
-        
-        jButtonAdicionar.setLocation(10,285);
-        jScrollPane.setLocation(170,35);
-        
-    
+        jTextFieldNome.setLocation(10, 35);
+
+        jLabelNome.setLocation(10, 60);
+        jTextFieldAno.setLocation(10, 85);
+
+        jLabelCNPJ.setLocation(10, 110);
+        jFormattedTextFieldCNPJ.setLocation(10, 135);
+
+        jLabelCategoria.setLocation(10, 160);
+        jComboBoxCategoria.setLocation(10, 185);
+
+        jLabelRendaAnual.setLocation(10, 210);
+        jTextFieldRendaAnual.setLocation(10, 235);
+
+        jCheckBoxPrivado.setLocation(10, 260);
+
+        jButtonAdicionar.setLocation(10, 285);
+        jScrollPane.setLocation(170, 35);
+
     }
 
-    @Override
     public void gerarDimensoes() {
         jLabelNome.setSize(150, 20);
         jTextFieldNome.setSize(150, 20);
@@ -114,10 +111,9 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
         jCheckBoxPrivado.setSize(150, 20);
 
         jButtonRendaAdicionar.setSize(100, 20);
-      jScroolPane.setSize(300,400);
+        jScroolPane.setSize(300, 400);
     }
 
-    @Override
     public void adicionarComponentes() {
         jFrame.add(jTextFieldAno);
         jFrame.add(jTextFieldNome);
@@ -134,7 +130,7 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
         jFrame.add(jButtonExcluir);
         jFrame.add(jFormattedTextFieldCNPJ);
         jFrame.add(jScrollPane);
-       
+
     }
 
     private void configurarJComboBox() {
@@ -151,11 +147,70 @@ public class ExemploHospitalJFrame implements JFrameBaseInterface {
 
         }
     }
- private void configurarJTable(){
- dtm = new DefaultTableModel();
- dtm.addColumn("Nome");
- dtm.addColumn("Cnpj");
- dtm.addColumn("Renda Atual");
- jTable.setModel(dtm);
+
+    private void configurarJTable() {
+        dtm = new DefaultTableModel();
+        dtm.addColumn("Nome");
+        dtm.addColumn("Cnpj");
+        dtm.addColumn("Renda Atual");
+        jTable.setModel(dtm);
+
+    }
+
+    private void acaoBotaoAdicionar() {
+        jButtonAdicionar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Hospital hospital = new Hospital();
+                hospital.setNome(jTextFieldNome.getText());
+                hospital.setCNPJ(jFormattedTextFieldCNPJ.getText());
+                hospital.setRendaAnual(Double.parseDouble(
+                        jTextFieldRendaAnual.getText()
+                ));
+                hospital.setPrivado(jCheckBoxPrivado.isSelected());
+                hospital.setCategoria(
+                        jComboBoxCategoria.getSelectedItem().toString()
+                );
+                hospítais.add(hospital);
+                dtm.addRow(new Object[]{
+                    hospital.getNome(),
+                    hospital.getCnpjj(),
+                    hospital.getRendaAnual()
+                });
+            }
+        });
+
+        limparCampos();
+
+    }
+
+    private void limparCampos() {
+        jTextFieldAno.setText("");
+        jTextFieldNome.setText("");
+        jTextFieldRendaAnual.setText("");
+
+        preencherCampos(hospital);
+    }
+
+    private void preencherCampos(Hospital hospital) {
+        jTextFieldNome.setText(hospital.getNome());
+        jTextFieldAno.setText(
+                String.valueOf(hospital.getRendeAnual())
+        );
+    }
+
+    jTextFieldRendeAnual.setText (
+            String.valueOf
+
+    (hospital.getRendaAnual()
+      );
+    jComboBoxCategoria.setText ()
+
+);
+      
+      
+
+
+
 
 }
